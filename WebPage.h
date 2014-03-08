@@ -8,31 +8,49 @@
 #define HTTP_GET_HEAD "GET "
 #define HTTP_GET_FOOT " HTTP"
 #define HTTP_HEADER_LEN 4
+#define PAGE404 "./404.html"
 
 /*############# Prototipi ###############*/
 char* GetFileRequest(char* HTTP_Request);
 char* CheckPageExistence(char* path);
+char* CheckHttpRequest(char* HTTP_Request);
 
 
 /*########### Implementazione ##############*/
+char* CheckHttpRequest(char* HTTP_Request){
+	char* sup;
+
+	sup = GetFileRequest(HTTP_Request);
+	if(!sup) return sup;
+
+	sup = stringConcat("./www",GetFileRequest(HTTP_Request));
+	sup = CheckPageExistence(sup);
+
+	if(sup) return sup;
+	else return CheckPageExistence(PAGE404);
+}
+
 char* CheckPageExistence(char* path){
-		printf("%s\n",path );
-	 /*FILE* fp;
+	FILE* fp;
 	char* text;
 	int size;
-
-   fp = fopen(Path, "r");
-    if(fp) {
-    	fseek(fp, 0, SEEK_END); 
+	int ret;
+	
+	fp = fopen(path, "rb+");
+	if(fp) {
+		printf("\n---FILE APERTO---\n");
+		fseek(fp, 0, SEEK_END); 
 		size = ftell(fp);
-		printf("%d\n\n",size);fclose(fp);/*
 		fseek(fp, 0, SEEK_SET);
-		text = malloc(size);
-		fread(text, 1, size, fp);
+
+		text = calloc(size,(size+1)*sizeof(char));
+		ret = (int)fread(text,sizeof(char),size,fp);
+		//while(fgets(text, size, fp)!=NULL)printf("%s",text);
+		printf("%d|%d\n", ret,size);
 		fclose(fp);
 		return text;
-    }
-    else return NULL;*/
+	}
+	else return NULL;
 }
 
 char* GetFileRequest(char* HTTP_Request){

@@ -5,15 +5,13 @@
 int main(int argc,char** argv){
 	char* word;
 	char* sup="";
-	char* pro="";
 
 	if(argc!=2){ printf("USAGE: %s WORD\n",argv[0]); return -1; }
 	word=argv[1];
-	
-	sup = stringConcat("./www",GetFileRequest(word));
-	printf("%s\n",sup );
-	pro = CheckPageExistence(sup);
-	printf("%s\n",pro );
+
+	sup = CheckHttpRequest(word);
+	if(sup) printf("\n\n\n%s\n", sup);
+	else printf("RICHIESTA NON CORRETTA\n");
 
 	return 0;
 }
