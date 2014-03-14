@@ -1,6 +1,11 @@
 #ifndef ADDRESS_HPP
 #define ADDRESS_HPP
 
+#include <iostream>
+using namespace std;
+
+#include <unistd.h>
+
 typedef struct sockaddr_in Addr_bin;	//Definizione del socket
 
 /*Classe che gestisce gli indirizzi*/

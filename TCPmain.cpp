@@ -1,4 +1,4 @@
-/*FOR COMPILE: clear; g++ TCPmain.cpp -o main -Wno-format-security -Wno-write-strings -std=c++11*/
+//FOR COMPILE: clear; g++ TCPmain.cpp -o main -Wno-format-security -Wno-write-strings -std=c++11
 #define MAX_BUFFER 4096
 
 #include <iostream>
@@ -8,51 +8,36 @@ using namespace std;
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include "errore.h"
-#include "Socket.hpp"
-#include "Address.hpp"
-#include "List.hpp"
 #include "TCP.hpp"
 #include "WebPage.h"
 
 int main(int argc, char const *argv[])
 {
-	char* msgrec;
-	char* msg;
-	char* header = "HTTP/1.1 200 OK\n\
-Date: Mon, 23 May 2005 22:38:34 GMT\n\
-Server: Apache/1.3.3.7 (Unix) (Red-Hat/Linux)\n\
-Last-Modified: Wed, 08 Jan 2003 23:11:55 GMT\n\
-Accept-Ranges: bytes\n\
-Connection: close\n\
-\n";
-
 	int server_port;
+	char* msgrec;	//Per i messaggi in recezione
+	char* msg;	//Per i messaggi in invio
+	char* header = "HTTP/1.1 200 OK\nDate: Mon, 23 May 2005 22:38:34 GMT\nServer: Apache/1.3.3.7 (Unix) (Red-Hat/Linux)\nLast-Modified: Wed, 08 Jan 2003 23:11:55 GMT\nAccept-Ranges: bytes\nConnection: close\n\n"; //Header HTTP
 
-	if (argc !=2) {	
-		printf("USAGE:%s PORT\n",argv[0]);
-		return -1; 
-	}
 
-	server_port = atoi(argv[1]);
+	if (argc !=2) {	printf("USAGE:%s PORT\n",argv[0]); return -1; }	//Se la porta non è presente, spiega l'utilizzo della funzione
 
-	Address* addr = new Address("127.0.0.1",server_port);
-	ServerTCP* server = new ServerTCP(server_port);
-	Conn_Server* client;
+	server_port = atoi(argv[1]);	//Converte la stringa in numero
 
-	client = server->accetta(addr);
+	Address* addr = new Address("127.0.0.1",server_port);	//Istanzio il server in locale
+	ServerTCP* server = new ServerTCP(server_port);		//Istanzio la classe server
+	Conn_Server* client;	//Creo un client singolo su cui operare
 
-	msgrec = client->ricevi();
+	client = server->accetta(addr);	//Aspetto la connessione del client
 
-	printf("#Richiesta#\n%s\n--------------\n\n",msgrec ); //Richiesta
+	msgrec = client->ricevi();	//Ricevo la sua richiesta
 
-	msg=stringConcat(header,CheckHttpRequest(msgrec));
+	printf("\n#Richiesta#\n%s\n--------------\n",msgrec );
 
-	client->invia(msg);
+	msg=stringConcat(header,CheckHttpRequest(msgrec));	//Controlla la presenza del file e lo aggiungo all'HEADER HTTP
 
-	printf("#Risposta#\n%s\n---------------\n\n",msg);	//Risposta
+	client->invia(msg);	//Invio la risposta
+
+	printf("\n#Risposta#\n%s\n---------------\n",msg);
 
 	delete(addr);
 	delete(server);
