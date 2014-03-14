@@ -38,15 +38,16 @@ char* CheckPageExistence(char* path){
 	
 	fp = fopen(path, "rb+");
 	if(fp) {
-		printf("\n---FILE APERTO---\n");
 		fseek(fp, 0, SEEK_END); 
 		size = ftell(fp);
 		fseek(fp, 0, SEEK_SET);
+		
+		text = calloc(sizeof(char),(size+1)*sizeof(char));
 
-		text = calloc(size,(size+1)*sizeof(char));
-		ret = (int)fread(text,sizeof(char),size,fp);
-		//while(fgets(text, size, fp)!=NULL)printf("%s",text);
-		printf("%d|%d\n", ret,size);
+		fread(text,sizeof(char),size,fp);
+
+		fclose (out);
+
 		fclose(fp);
 		return text;
 	}
