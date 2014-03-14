@@ -42,11 +42,9 @@ char* CheckPageExistence(char* path){
 		size = ftell(fp);
 		fseek(fp, 0, SEEK_SET);
 		
-		text = calloc(sizeof(char),(size+1)*sizeof(char));
+		text = (char*)calloc(sizeof(char),(size+1)*sizeof(char));
 
 		fread(text,sizeof(char),size,fp);
-
-		fclose (out);
 
 		fclose(fp);
 		return text;

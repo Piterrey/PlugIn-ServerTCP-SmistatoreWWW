@@ -1,4 +1,4 @@
-/*FOR COMPILE: clear; g++ main.cpp -Wno-format-security -Wno-write-strings -std=c++11*/
+/*FOR COMPILE: clear; g++ TCPmain.cpp -o main -Wno-format-security -Wno-write-strings -std=c++11*/
 #define MAX_BUFFER 4096
 
 #include <iostream>
@@ -15,19 +15,19 @@ using namespace std;
 #include "Address.hpp"
 #include "List.hpp"
 #include "TCP.hpp"
+#include "WebPage.h"
 
 int main(int argc, char const *argv[])
 {
-	char* msgrec = "";
-	char* msg = "HTTP/1.1 200 OK\n\
+	char* msgrec;
+	char* msg;
+	char* header = "HTTP/1.1 200 OK\n\
 Date: Mon, 23 May 2005 22:38:34 GMT\n\
 Server: Apache/1.3.3.7 (Unix) (Red-Hat/Linux)\n\
 Last-Modified: Wed, 08 Jan 2003 23:11:55 GMT\n\
-ETag: \"3f80f-1b6-3e1cb03b\"\n\
-Content-Type: text/html; charset=UTF-8\n\
-Content-Length: 131\n\
 Accept-Ranges: bytes\n\
-Connection: close";
+Connection: close\n\
+\n";
 
 	int server_port;
 
@@ -46,11 +46,13 @@ Connection: close";
 
 	msgrec = client->ricevi();
 
-	printf("%s\n",msgrec );
+	printf("#Richiesta#\n%s\n--------------\n\n",msgrec ); //Richiesta
+
+	msg=stringConcat(header,CheckHttpRequest(msgrec));
 
 	client->invia(msg);
 
-	printf("%s\n\n\n",msg);
+	printf("#Risposta#\n%s\n---------------\n\n",msg);	//Risposta
 
 	delete(addr);
 	delete(server);
