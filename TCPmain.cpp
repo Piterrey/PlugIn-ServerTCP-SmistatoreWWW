@@ -15,8 +15,8 @@ int main(int argc, char const *argv[])
 {
 	int server_port;
 	char* msgrec;	//Per i messaggi in recezione
-	char* msg;	//Per i messaggi in invio
-	char* header = "HTTP/1.1 200 OK\nDate: Mon, 23 May 2005 22:38:34 GMT\nServer: Apache/1.3.3.7 (Unix) (Red-Hat/Linux)\nLast-Modified: Wed, 08 Jan 2003 23:11:55 GMT\nAccept-Ranges: bytes\nConnection: close\n\n"; //Header HTTP
+	MultiFile* msg;	//Per i messaggi in invio
+	char* header = "HTTP/1.1 202 OK\nDate: Mon, 23 May 2005 22:38:34 GMT\nServer: Apache/1.3.3.7 (Unix) (Red-Hat/Linux)\nLast-Modified: Wed, 08 Jan 2003 23:11:55 GMT\nAccept-Ranges: bytes\nConnection: close\n\n"; //Header HTTP
 
 
 	if (argc !=2) {	printf("USAGE:%s PORT\n",argv[0]); return -1; }	//Se la porta non è presente, spiega l'utilizzo della funzione
@@ -33,9 +33,9 @@ int main(int argc, char const *argv[])
 
 	printf("\n#Richiesta#\n%s\n--------------\n",msgrec );
 
-	msg=stringConcat(header,CheckHttpRequest(msgrec));	//Controlla la presenza del file e lo aggiungo all'HEADER HTTP
+	msg=ConcactMulti(header,CheckHttpRequest(msgrec));	//Controlla la presenza del file e lo aggiungo all'HEADER HTTP
 
-	client->invia(msg);	//Invio la risposta
+	client->inviaMulti(msg);	//Invio la risposta
 
 	printf("\n#Risposta#\n%s\n---------------\n",msg);
 
