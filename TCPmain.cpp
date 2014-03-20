@@ -13,7 +13,7 @@ using namespace std;
 
 int main(int argc, char const *argv[])
 {
-	int server_port;
+	int server_port,i;
 	char* msgrec;	//Per i messaggi in recezione
 	MultiFile* msg;	//Per i messaggi in invio
 	char* header = "HTTP/1.1 202 OK\nDate: Mon, 23 May 2005 22:38:34 GMT\nServer: Apache/1.3.3.7 (Unix) (Red-Hat/Linux)\nLast-Modified: Wed, 08 Jan 2003 23:11:55 GMT\nAccept-Ranges: bytes\nConnection: close\n\n"; //Header HTTP
@@ -37,10 +37,13 @@ int main(int argc, char const *argv[])
 
 	client->inviaMulti(msg);	//Invio la risposta
 
-	printf("\n#Risposta#\n%s\n---------------\n",msg);
+	printf("\n#Risposta#\n");	//Leggo ogni carattere
+	for (int i = 0; i < msg->lenght; ++i)printf("%c",msg->content[i] );
+	printf("\n---------------\n";
 
 	delete(addr);
 	delete(server);
 	delete(client);
+	free(msg);
 	return 0;
 }

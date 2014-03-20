@@ -55,7 +55,7 @@ class Iterator
 	Nodo::Nodo():Nodo(NULL){}	//Mette il puntatire interno a NULL
 
 	Nodo::Nodo(Nodo* next){
-		set_next(next);
+		set_next(next);		
 	}
 
 	Nodo::~Nodo() {}

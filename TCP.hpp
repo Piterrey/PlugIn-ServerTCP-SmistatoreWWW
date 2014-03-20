@@ -137,78 +137,81 @@ class ServerTCP : SocketTCP
 
 	ClientTCP::~ClientTCP(){}
 
-	Conn_Client* ClientTCP::connetti(Address* server){	//Server fornisce l'indirizzo del server
+	Conn_Client* ClientTCP::connetti(Address* server){	//l'address fornisce l'indirizzo del server
 		int ret;
 
-		ret=connect(get_sock_id(),(struct sockaddr*) server->get_addr(),(socklen_t)sizeof(struct sockaddr)); 
+		ret=connect(get_sock_id(),(struct sockaddr*) server->get_addr(),(socklen_t)sizeof(struct sockaddr)); 	//Connette all'indirizzo di server 
 		if(ret){ return NULL; }
-		connessione = new Conn_Client(get_sock_id());
-		return connessione;
+		return new Conn_Client(get_sock_id());	//Restituisce il socket di connessione al server nella connessione
 	}
 
-	bool ClientTCP::close_con() { delete(connessione); }
+	bool ClientTCP::close_con() { delete(connessione); }	//Permetta la chiusura della connessione
 
-	bool ClientTCP::invia(char* msg) { return connessione->invia(msg); };
+	bool ClientTCP::invia(char* msg) { return connessione->invia(msg); };	//Richiama il metodo di invio della connessione
 
-	char* ClientTCP::ricevi() { return connessione->ricevi(); };
+	char* ClientTCP::ricevi() { return connessione->ricevi(); };	//Richiama il metodo di recezione della connessione
 
 /*##################################### CLIENT_TCP ########################################*/
 
-	ServerTCP::ServerTCP(int port){	//bind() - listen()
+	ServerTCP::ServerTCP(int port){
 		int ret;
-		lista_connessione = new Lista();
+		lista_connessione = new Lista();	//Crea una lista dove andare a salvare i client
 		Address* mySelf;
 		
-		mySelf = new Address(COMMON_ADDR,port);
-		ret = bind(get_sock_id(),(struct sockaddr*)mySelf->get_addr(),(socklen_t)sizeof(struct sockaddr));
+		mySelf = new Address(COMMON_ADDR,port);	//Prepara l'indirizzo con la porta indicata
+		ret = bind(get_sock_id(),(struct sockaddr*)mySelf->get_addr(),(socklen_t)sizeof(struct sockaddr)); //Si collega alla porta per la recezzione dei dati
 		if(ret){
 			errore("SocketTCP - Errore nell'assegnazione della porta\n",-1);
 		}
 
-		ret = listen(get_sock_id(), MAX_CONN);
+		ret = listen(get_sock_id(), MAX_CONN);	//Imposta il socket con il numero massimo di connessione a che potrà eseguire
 
 		if(ret){
-			errore("Errore nell'assegnazioen nel numero di connessioni\n",-3);
+			errore("Errore nell'assegnazione nel numero di connessioni\n",-3);
 		}
 
 		delete(mySelf);
 	}
 
 	ServerTCP::~ServerTCP(){
-		delete(lista_connessione);
+		delete(lista_connessione);	//Richiama il distruttore della lista
 	}
 
-	Conn_Server* ServerTCP::accetta(Address* client){ //accept()
+	Conn_Server* ServerTCP::accetta(Address* client){	//L'indirizzo verrà compilato dalla funzione
 		Conn_Server* conn;
 		int id;
 		int len_addr;
 
-		len_addr = sizeof(struct sockaddr_in);
-		id = accept(get_sock_id(), (struct sockaddr*) client->get_addr(),(socklen_t*) &len_addr);
+		len_addr = sizeof(struct sockaddr_in);	//Per evitare errori per i valori non impostati bisogna impostare prima
+		id = accept(get_sock_id(), (struct sockaddr*) client->get_addr(),(socklen_t*) &len_addr);		//Aspetta e accetta la connessione da un client scrivendo il suo indirizzo nei parametri client->get_addr
 
 		if(id<=0){
 			return NULL;
 		}
 
-		conn=new Conn_Server(id);
+		conn=new Conn_Server(id);	//Crea la connessione in base all'id
 
 		lista_connessione->add_Nodo(conn);
-		return conn;
+		return conn;	//Ritorna la connessione per l'utilizzo separato dalla lista
 	}	
 
-	void ServerTCP::close_tutte_connessioni(){
+	void ServerTCP::close_tutte_connessioni(){	
 		Iterator* index = lista_connessione->create_Iterator();
-		do{
-			delete(index->get_current());
+
+		do{	//Fintanto non si è all'ultimo
+			delete(index->get_current());	//elimina il nodo
 			index->move_next();
+
 		}while(index->is_done());
 	}
 
 	void ServerTCP::invia_a_tutti(char* msg){
 		Iterator* index = lista_connessione->create_Iterator();
-		do{
-			((Conn_Server*)index->get_current())->invia(msg);
+
+		do{	//Fintanto non si è all'ultimo
+			((Conn_Server*)index->get_current())->invia(msg);	//Invia il messaggio
 			index->move_next();
+
 		}while(index->is_done());
 	}
 
